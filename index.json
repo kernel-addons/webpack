@@ -1,0 +1,6 @@
+{
+    "name": "webpack",
+    "id": "strencher.webpack",
+    "description": "A webpack modules manager for discord's internals.",
+    "version": "1.0.0"
+}

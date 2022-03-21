@@ -1,0 +1,1 @@
+declare const Webpack: typeof import("./renderer").Webpack;
