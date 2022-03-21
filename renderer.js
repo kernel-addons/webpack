@@ -255,7 +255,7 @@ const findByDisplayName = function (...options) {
     }
 
     if (findBulk) {
-        const filters = displayNames.map(filters.map(Filters.byDisplayName));
+        const filters = displayNames.map(Filters.byDisplayName);
         filters.push({wait, ...rest});
 
         return bulk(...filters);
