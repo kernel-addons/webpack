@@ -49,12 +49,21 @@ const Filters = {
 
         return (m) => m && !~types.indexOf(typeof m) && props.every(prop => prop in m);
     },
+
     byDisplayName(displayName, defaultExports = false) {
         return defaultExports
             ? (m) => m?.default?.displayName === displayName
             : (m) => m?.displayName === displayName;
     },
-    byPrototypes(...protos) {return (m) => typeof m === "function" && protos.every(p => p in m.prototype);}
+
+    byPrototypes(...protos) {
+        return (m) => typeof m === "function" && protos.every(p => p in m.prototype);
+    },
+
+    byFunctionStrings(...strings) {
+        return (m) => typeof m?.default === 'function' &&
+            strings.every(string => ~m.default.toString().indexOf(string));
+    }
 };
 
 /**
@@ -63,7 +72,7 @@ const Filters = {
  */
 const require = function () {
     if (__webpack_require__) return __webpack_require__;
-    
+
     const chunk = [[Symbol("webpack")], {}, _ => _];
     __webpack_require__ = window[CHUNK_NAME].push(chunk);
     window[CHUNK_NAME].splice(window[CHUNK_NAME].indexOf(chunk), 1);
@@ -101,7 +110,7 @@ const findModule = function (filter, {all = false, force = false, default: defau
     for (const id in __webpack_require__.c) {
         const module = __webpack_require__.c[id].exports;
         if (!module || module === window) continue;
-        
+
         switch (typeof module) {
             case "object": {
                 if (wrapFilter(module, id)) {
@@ -127,7 +136,7 @@ const findModule = function (filter, {all = false, force = false, default: defau
                         found.push(module[key]);
                     }
                 }
-            
+
                 break;
             }
 
@@ -141,7 +150,7 @@ const findModule = function (filter, {all = false, force = false, default: defau
             }
         }
     }
-    
+
     if (hasError) {
         console.warn("[Webpack] filter threw an error. This can cause lag spikes at the user's end. Please fix asap.\n", hasError);
     }
@@ -229,12 +238,16 @@ const findByProps = function (...options) {
     }
 
     if (findBulk) {
-        const filters = props.map((propsArray) => Filters.byProps(...propsArray));
+        const filters = props.map((actualProps) => Array.isArray(actualProps)
+            ? Filters.byProps(...actualProps)
+            : Filters.byProps(actualProps)
+        );
+
         filters.push({wait, ...rest});
 
         return bulk(...filters);
     }
-    
+
 
     return null;
 };
@@ -260,7 +273,7 @@ const findByDisplayName = function (...options) {
 
         return bulk(...filters);
     }
-        
+
     return null;
 };
 
@@ -273,11 +286,11 @@ const findIndex = function (filter) {
     let foundIndex = -1;
 
     findModule((module, index) => {
-        if (filter(module)) foundIndex = index; 
+        if (filter(module)) foundIndex = index;
     });
 
     return foundIndex;
-}
+};
 
 /**
  * Gets the exports of a module at a specific index.
@@ -294,7 +307,7 @@ const atIndex = function (index) {
  * @param {(module: any) => boolean} filter filter that validates that options exist in the args tree.
  * @returns {any[]}
  */
- const parseOptions = function (args, filter = thing => (typeof (thing) === "object" && thing != null && !Array.isArray(thing))) {
+const parseOptions = function (args, filter = thing => (typeof (thing) === "object" && thing != null && !Array.isArray(thing))) {
     return [args, filter(args.at(-1)) ? args.pop() : {}];
 };
 
@@ -308,7 +321,7 @@ const atIndex = function (index) {
                 Dispatcher.unsubscribe(event, listener);
                 Events.dispatchEvent(new Event("ready"));
             };
-        
+
             Dispatcher.subscribe(event, listener);
         }
     })();
