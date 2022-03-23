@@ -49,19 +49,16 @@ const Filters = {
 
         return (m) => m && !~types.indexOf(typeof m) && props.every(prop => prop in m);
     },
-
     byDisplayName(displayName, defaultExports = false) {
         return defaultExports
             ? (m) => m?.default?.displayName === displayName
             : (m) => m?.displayName === displayName;
     },
-
     byPrototypes(...protos) {
         return (m) => typeof m === "function" && protos.every(p => p in m.prototype);
     },
-
     byFunctionStrings(...strings) {
-        return (m) => typeof m?.default === 'function' &&
+        return (m) => typeof m?.default === "function" &&
             strings.every(string => ~m.default.toString().indexOf(string));
     }
 };
@@ -328,6 +325,7 @@ const parseOptions = function (args, filter = thing => (typeof (thing) === "obje
 }
 
 export const Webpack = window.Webpack = {
+    findModule,
     findByDisplayName,
     findByProps,
     findIndex,
