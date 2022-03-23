@@ -25,6 +25,9 @@ interface ConditionalWaitFor extends WaitForOptions {
 declare type BulkOptions = (ConditionalDefault | ConditionalWaitFor) & {
   wrap?: boolean;
 };
+declare type ConditionalBulk = [...(string | string[])[], {
+  bulk: true;
+} & ExtendedOptions];
 declare type ExtendedOptions = (ConditionalDefault | ConditionalWaitFor);
 declare const Webpack: {
   bulk: (...options: [...filters: SearchFilter[], options: BulkOptions] | SearchFilter[]) => any[];
@@ -50,11 +53,7 @@ declare const Webpack: {
     force?: boolean;
     default?: boolean;
   }) => any;
-  findByProps: (...options: string[] | [...string[], {
-    bulk: true;
-  } & ExtendedOptions] | [...string[][], {
-    bulk: true;
-  } & ExtendedOptions] | [...string[], ExtendedOptions]) => any;
+  findByProps: (...options: string[] | ConditionalBulk | [...string[], ExtendedOptions]) => any;
   findModules: (filter: SearchFilter, options?: {
     force?: boolean;
     default?: boolean;
@@ -68,11 +67,7 @@ declare const Webpack: {
     force?: boolean;
     default?: boolean;
   }) => any;
-  getByProps: (...options: string[] | [...string[], {
-    bulk: true;
-  } & ExtendedOptions] | [...string[][], {
-    bulk: true;
-  } & ExtendedOptions] | [...string[], ExtendedOptions]) => any;
+  getByProps: (...options: string[] | ConditionalBulk | [...string[], ExtendedOptions]) => any;
   getModules: (filter: SearchFilter, options?: {
     force?: boolean;
     default?: boolean;
