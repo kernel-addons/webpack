@@ -312,7 +312,7 @@ const parseOptions = function (args, filter = thing => (typeof (thing) === "obje
     const InitializeEvents = ["START_SESSION", "CONNECTION_OPEN"];
     (async () => {
         await globalPromise;
-        const Dispatcher = await findByProps("dirtyDispatch", {wait: true, forever: true});
+        const Dispatcher = await findByProps("dispatch", "isDispatching", {wait: true, forever: true});
         for (const event of InitializeEvents) {
             const listener = function () {
                 Dispatcher.unsubscribe(event, listener);
